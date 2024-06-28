@@ -166,46 +166,34 @@ if st.sidebar.button("Analyze Stock"):
         
         st.subheader(f'Stock Analysis Results for {ticker}')
         
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write(f"**P/E Ratio**: {result['P/E Ratio']}")
-            st.write(f"**Forward P/E**: {result['Forward P/E']}")
-            st.write(f"**Price to Sales Ratio**: {result['Price to Sales Ratio']}")
-            st.write(f"**P/B Ratio**: {result['P/B Ratio']}")
-            st.write(f"**Dividend Yield**: {result['Dividend Yield']}")
-            st.write(f"**Trailing Eps**: {result['Trailing Eps']}")
-            st.write(f"**Target Price**: {result['Target Price']}")
-            st.write(f"**Sector**: {result['Sector']}")
-            st.write(f"**Industry**: {result['Industry']}")
-            st.write(f"**Full Time Employees**: {result['Full Time Employees']}")
-            st.write(f"**City**: {result['City']}")
-            st.write(f"**State**: {result['State']}")
-            st.write(f"**Country**: {result['Country']}")
-            st.write(f"**Website**: {result['Website']}")
+        # Sort and group ratios by type
+        grouped_ratios = {
+            'Valuation Ratios': ['P/E Ratio', 'Forward P/E', 'Price to Sales Ratio', 'P/B Ratio'],
+            'Financial Ratios': ['Dividend Yield', 'Trailing Eps', 'Payout Ratio'],
+            'Profitability Margins': ['Profit Margins', 'Gross Margins', 'EBITDA Margins', 'Operating Margins'],
+            'Financial Metrics': ['Return on Assets (ROA)', 'Return on Equity (ROE)'],
+            'Revenue Metrics': ['Revenue Growth', 'Total Revenue (Million $)', 'Total Revenue per Share'],
+            'Financial Health': ['Debt to Equity Ratio', 'Current Ratio'],
+            'Cashflow Metrics': ['Total Cash (Million $)', 'Operating Cashflow (Million $)', 'Levered Free Cashflow (Million $)'],
+            'Market Metrics': ['Market Cap (Billion $)', 'Enterprise Value (Billion $)', 'Enterprise to Revenue', 'Enterprise to EBITDA']
+        }
         
-        with col2:
-            st.write(f"**Market Cap (Billion $)**: {result['Market Cap (Billion $)']}")
-            st.write(f"**Enterprise Value (Billion $)**: {result['Enterprise Value (Billion $)']}")
-            st.write(f"**Enterprise to Revenue**: {result['Enterprise to Revenue']}")
-            st.write(f"**Enterprise to EBITDA**: {result['Enterprise to EBITDA']}")
-            st.write(f"**Profit Margins**: {result['Profit Margins']}")
-            st.write(f"**Gross Margins**: {result['Gross Margins']}")
-            st.write(f"**EBITDA Margins**: {result['EBITDA Margins']}")
-            st.write(f"**Operating Margins**: {result['Operating Margins']}")
-            st.write(f"**Return on Assets (ROA)**: {result['Return on Assets (ROA)']}")
-            st.write(f"**Return on Equity (ROE)**: {result['Return on Equity (ROE)']}")
-            st.write(f"**Revenue Growth**: {result['Revenue Growth']}")
-            st.write(f"**Payout Ratio**: {result['Payout Ratio']}")
-            st.write(f"**Total Cash (Million $)**: {result['Total Cash (Million $)']}")
-            st.write(f"**Total Debt (Million $)**: {result['Total Debt (Million $)']}")
-            st.write(f"**Total Revenue (Million $)**: {result['Total Revenue (Million $)']}")
-            st.write(f"**Gross Profits**: {result['Gross Profits']}")
-            st.write(f"**Total Revenue per Share**: {result['Total Revenue per Share']}")
-            st.write(f"**Debt to Equity Ratio**: {result['Debt to Equity Ratio']}")
-            st.write(f"**Current Ratio**: {result['Current Ratio']}")
-            st.write(f"**Operating Cashflow (Million $)**: {result['Operating Cashflow (Million $)']}")
-            st.write(f"**Levered Free Cashflow (Million $)**: {result['Levered Free Cashflow (Million $)']}")
-
+        col1, col2 = st.columns(2)
+        
+        for group_name, ratios in grouped_ratios.items():
+            with col1:
+                st.subheader(group_name)
+                for ratio in ratios:
+                    if result[ratio] is not None:
+                        st.write(f"**{ratio}**: {result[ratio]}")
+            
+            with col2:
+                st.subheader(group_name)
+                for ratio in ratios:
+                    if result[ratio] is not None:
+                        st.write(f"**{ratio}**: {result[ratio]}")
+            st.write("---")
+        
         # Display current and historical closing prices
         st.subheader(f'Current and Historical Closing Prices for {ticker}')
         st.write(f"**Current Price**: {result['Historical Prices']['Close'][-1]}")
@@ -261,6 +249,7 @@ if st.sidebar.button("Optimize Portfolio"):
     st.subheader('Current and Historical Closing Prices for Optimized Portfolio')
     optimized_portfolio_prices = (adj_close_df * optimal_weights).sum(axis=1)
     st.line_chart(optimized_portfolio_prices)
+
 
 
 
