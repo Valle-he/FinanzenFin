@@ -90,25 +90,25 @@ def analyze_stock(ticker):
 
 # Function for portfolio optimization
 def optimize_portfolio(tickers, min_weight, max_weight):
-    # Datumsbereich festlegen
+    # Define date range
     end_date = datetime.today()
     start_date = end_date - timedelta(days=5*365)
 
-    # Datenrahmen für bereinigte Schlusskurse erstellen
+    # Create dataframe for adjusted closing prices
     adj_close_df = pd.DataFrame()
 
     for ticker in tickers:
         data = yf.download(ticker, start=start_date, end=end_date)
         adj_close_df[ticker] = data['Adj Close']
 
-    # Log-Renditen berechnen
+    # Calculate log returns
     log_returns = np.log(adj_close_df / adj_close_df.shift(1))
     log_returns = log_returns.dropna()
 
-    # Kovarianzmatrix berechnen
+    # Calculate covariance matrix
     cov_matrix = log_returns.cov() * 252
 
-    # Funktionen für Standardabweichung, erwartete Rendite und Sharpe-Ratio
+    # Functions for standard deviation, expected return, and Sharpe ratio
     def standard_deviation(weights, cov_matrix):
         variance = weights.T @ cov_matrix @ weights
         return np.sqrt(variance)
@@ -119,12 +119,12 @@ def optimize_portfolio(tickers, min_weight, max_weight):
     def sharpe_ratio(weights, log_returns, cov_matrix, risk_free_rate):
         return (expected_return(weights, log_returns) - risk_free_rate) / standard_deviation(weights, cov_matrix)
 
-    # FRED API verwenden, um den aktuellen 10-Jahres-Treasury-Rate zu erhalten
+    # Use FRED API to get current 10-year Treasury rate
     fred = Fred(api_key='2bbf1ed4d0b03ad1f325efaa03312596')
     ten_year_treasury_rate = fred.get_series_latest_release('GS10') / 100
     risk_free_rate = ten_year_treasury_rate.iloc[-1]
 
-    # Optimierung der Sharpe-Ratio mit einer Iterationsmethode
+    # Optimize Sharpe ratio using an iterative approach
     num_assets = len(tickers)
     num_portfolios = 10000
     results = np.zeros((3, num_portfolios))
@@ -135,7 +135,7 @@ def optimize_portfolio(tickers, min_weight, max_weight):
 
     constraints = ({'type': 'eq', 'fun': lambda weights: np.sum(weights) - 1})
 
-    # Setze Grenzen für Gewichtungen
+    # Set boundaries for weights
     bounds = [(min_weight / 100, max_weight / 100)] * num_assets
 
     for i in range(num_portfolios):
@@ -155,7 +155,7 @@ def optimize_portfolio(tickers, min_weight, max_weight):
 # Streamlit App
 st.title('Stock and Portfolio Analysis')
 
-# Sidebar für Stock Analysis Input
+# Sidebar for Stock Analysis Input
 st.sidebar.header('Stock Analysis Input')
 ticker = st.sidebar.text_input('Enter the stock ticker:', 'AAPL')
 
@@ -214,7 +214,7 @@ if st.sidebar.button("Analyze Stock"):
         except Exception as e:
             st.error(f"Error fetching news data: {str(e)}")
 
-# Sidebar für Portfolio Optimization Input
+# Sidebar for Portfolio Optimization Input
 st.sidebar.header('Portfolio Optimization Input')
 tickers_input = st.sidebar.text_input("Enter the stock tickers separated by commas (e.g., AAPL,GME,SAP,TSLA):", "AAPL,GME,SAP,TSLA")
 tickers = [ticker.strip() for ticker in tickers_input.split(',')]
@@ -242,3 +242,4 @@ if st.sidebar.button("Optimize Portfolio"):
     st.subheader('Current and Historical Closing Prices for Optimized Portfolio')
     optimized_portfolio_prices = (adj_close_df * optimal_weights).sum(axis=1)
     st.line_chart(optimized_portfolio_prices)
+
