@@ -5,7 +5,7 @@ import pandas as pd
 st.title("lol")
 
 st.write(
-    "We are so glad to see you here. ✨ "
+    "cool. ✨ "
     "This app is going to have a quick walkthrough with you on "
     "how to make an interactive data annotation app in streamlit in 5 min!"
 )
