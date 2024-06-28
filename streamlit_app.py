@@ -178,20 +178,13 @@ if st.sidebar.button("Analyze Stock"):
             'Market Metrics': ['Market Cap (Billion $)', 'Enterprise Value (Billion $)', 'Enterprise to Revenue', 'Enterprise to EBITDA']
         }
         
-        col1, col2 = st.columns(2)
-        
         for group_name, ratios in grouped_ratios.items():
-            with col1:
-                st.subheader(group_name)
-                for ratio in ratios:
-                    if result[ratio] is not None:
-                        st.write(f"**{ratio}**: {result[ratio]}")
-            
-            with col2:
-                st.subheader(group_name)
-                for ratio in ratios:
-                    if result[ratio] is not None:
-                        st.write(f"**{ratio}**: {result[ratio]}")
+            st.subheader(group_name)
+            st.markdown("<div style='border:1px solid #e6e6e6; padding: 10px'>", unsafe_allow_html=True)
+            for ratio in ratios:
+                if result[ratio] is not None:
+                    st.write(f"**{ratio}**: {result[ratio]}")
+            st.markdown("</div>", unsafe_allow_html=True)
             st.write("---")
         
         # Display current and historical closing prices
@@ -249,8 +242,3 @@ if st.sidebar.button("Optimize Portfolio"):
     st.subheader('Current and Historical Closing Prices for Optimized Portfolio')
     optimized_portfolio_prices = (adj_close_df * optimal_weights).sum(axis=1)
     st.line_chart(optimized_portfolio_prices)
-
-
-
-
-
